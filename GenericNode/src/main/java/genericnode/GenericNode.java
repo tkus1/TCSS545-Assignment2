@@ -5,7 +5,12 @@
  */
 package genericnode;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.sql.Blob;
 import java.util.AbstractMap.SimpleEntry;
 
@@ -54,13 +59,78 @@ public class GenericNode
                 String val = (args.length > 5) ? args[5] : "";
                 SimpleEntry<String, String> se = new SimpleEntry<String, String>(key, val);
                 // insert code to make TCP client request to server at addr:port
+                try (Socket socket = new Socket(addr, port)) {
+                    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                    out.println(cmd + " " + key + " " + val);
+                    System.out.println("Sent request to server");
+                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    //String response = in.readLine();
+                    StringBuilder response = new StringBuilder();
+                    response.append(in.readLine());
+                    response.append("\n");
+                    response.append(in.readLine());
+
+                    System.out.println("Received response from server: " + response);
+                } catch (IOException ex) {
+                    System.out.println("Client exception: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
             }
 
             if (args[0].equals("ts"))
             {
                 System.out.println("TCP SERVER");
+                SharedResource keyValueStorage = new SharedResource();
                 int port = Integer.parseInt(args[1]);
                 // insert code to start TCP server on port
+                try (ServerSocket serverSocket = new ServerSocket(port)) {
+                    System.out.println("Server is listening on port " + port);
+
+                    while (true) {
+                        Socket socket = serverSocket.accept();
+                        System.out.println("New client connected");
+
+                        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                        String request = in.readLine();
+                        System.out.println("Received request: " + request);
+
+                        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                        out.println("Response from server!!!!!!");
+                        String[] parts = request.split(" ");
+                        String cmd = parts[0];
+                        String key = parts[1];
+                        String val = "";
+                        if(cmd.equals("put") | cmd.equals("del")){
+                            val = parts[2];
+                        }
+
+                        //exception handling
+                        //access null key for PUT
+
+                        if (cmd.equals("put")) {
+                            keyValueStorage.put(key, val);
+                            out.println("PUT " + key + " " + val);
+                        } else if (cmd.equals("get")) {
+                            String value = keyValueStorage.get(key);
+                            out.println("GET " + key + " " + value);
+                        } else if (cmd.equals("del")) {
+                            keyValueStorage.delete(key);
+                            out.println("DEL " + key);
+                        } else if (cmd.equals("store")) {
+                            out.println("STORE " + keyValueStorage);
+                        } else if (cmd.equals("exit")) {
+                            out.println("EXIT");
+                            break;
+                        }
+
+
+                    }
+
+                } catch (IOException ex) {
+                    System.out.println("Server exception: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+
             }
             if (args[0].equals("uc"))
             {
@@ -104,6 +174,7 @@ public class GenericNode
         
         
     }
+
     
     
 }
