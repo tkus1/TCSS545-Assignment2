@@ -58,7 +58,6 @@ public class GenericNode
                 String val = (args.length > 5) ? args[5] : "";
                 // todo handle invalid input args
 
-
                 SimpleEntry<String, String> se = new SimpleEntry<String, String>(key, val);
                 ExtendedEntry<String, String> ee = new ExtendedEntry<String, String>(se, cmd);
                 // insert code to make TCP client request to server at addr:port
@@ -99,28 +98,36 @@ public class GenericNode
                     while (true) {
                         Socket socket = serverSocket.accept();
                         System.out.println("New client connected");
-                        //object stream for receiving
-                        ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-                        ExtendedEntry<String, String> entry = (ExtendedEntry<String,String>) in.readObject();
-                        System.out.println("Received request: " + " " + entry.getMethodName()
-                                                                + " " + entry.getKey()
-                                                                + " " + entry.getValue());
-                        // if command is exit, break
-                        if(entry.getMethodName().equals("exit")){
-                            break;
-                        }
-                        // byte stream for sending
-                        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                        // process the request
-                        serverProcess(entry, keyValueStorage, out);
-                        out.close();
+
+                        new Thread(() -> {
+                            try {
+                                //object stream for receiving
+                                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+                                ExtendedEntry<String, String> entry = (ExtendedEntry<String,String>) in.readObject();
+                                System.out.println("Received request: " + " " + entry.getMethodName()
+                                        + " " + entry.getKey()
+                                        + " " + entry.getValue());
+
+                                // byte stream for sending
+                                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                                // if command is exit, break
+                                if(entry.getMethodName().equals("exit")){
+                                    out.println("Server shutting down");
+                                    System.exit(0);
+                                }
+                                // process the request
+                                serverProcess(entry, keyValueStorage, out);
+                                out.close();
+                            } catch (IOException | ClassNotFoundException ex) {
+                                System.out.println("Server exception: " + ex.getMessage());
+                                ex.printStackTrace();
+                            }
+                        }).start();
                     }
 
                 } catch (IOException ex) {
                     System.out.println("Server exception: " + ex.getMessage());
                     ex.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
                 }
 
             }
