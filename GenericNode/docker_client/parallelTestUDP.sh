@@ -1,5 +1,6 @@
 server=localhost
 port=8080
+# TCP test cannot run in parallel because the program specifies the receive port (input port number + 1).
 #server=UDPServer
 #port=1234
 commands=(
