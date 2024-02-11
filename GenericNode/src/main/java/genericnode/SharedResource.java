@@ -1,8 +1,9 @@
 package genericnode;
 
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
-class SharedResource {
+public class SharedResource {
     private final ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
     //exception handling
     //access null key for PUT
@@ -20,6 +21,19 @@ class SharedResource {
     }
     public void delete(String key) {
         map.remove(key);
+    }
+    public ArrayList<StringBuilder> store() {
+        ArrayList<StringBuilder> responseArray = new ArrayList<>();
+        if(map.isEmpty())
+        {
+            responseArray.add(new StringBuilder("empty"));
+            return responseArray;
+        }
+        for(String key : map.keySet()) {
+            StringBuilder response = new StringBuilder();
+            responseArray.add(response.append("key:").append(key).append(":value:").append(map.get(key)));
+        }
+        return responseArray;
     }
     public boolean containsKey(String key) {
         return map.containsKey(key);
