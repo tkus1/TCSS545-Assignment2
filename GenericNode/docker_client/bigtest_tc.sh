@@ -1,5 +1,7 @@
-server=localhost
-port=8080
+#server=localhost
+#port=8080
+server=TCPServer
+port=1234
 java -jar GenericNode.jar tc $server $port put mD7 booLeejae8ne0lahgoos
 java -jar GenericNode.jar tc $server $port put 1VB ahghukooy8ooYi7eeChe
 java -jar GenericNode.jar tc $server $port put 8CX eK8zae6LaeTh2Niijeih
@@ -142,7 +144,7 @@ java -jar GenericNode.jar tc $server $port get eeghe2Ze
 java -jar GenericNode.jar tc $server $port put eeW8oPec mieGo6ue0Uuw
 java -jar GenericNode.jar tc $server $port get Mo6pi0Aig  
 java -jar GenericNode.jar tc $server $port get ooZosh3d  
-java -jar GenericNode.jar tc $server $port get v9W  
+java -jar GenericNode.jar tc $server $port get v9W
 java -jar GenericNode.jar tc $server $port get ahC4y  
 java -jar GenericNode.jar tc $server $port get Da3ei  
 java -jar GenericNode.jar tc $server $port get DSA0  
@@ -150,4 +152,5 @@ java -jar GenericNode.jar tc $server $port put Jee1phoo jahH8aeh7loh
 java -jar GenericNode.jar tc $server $port get eZia6rief  
 java -jar GenericNode.jar tc $server $port get 2HmK  
 java -jar GenericNode.jar tc $server $port put Du9ruKiek laidie4ieShiquoh7ahGhahfuJu5TaeThaiDooc
-
+java -jar GenericNode.jar tc $server $port store
+#java -jar GenericNode.jar tc $server $port exit
