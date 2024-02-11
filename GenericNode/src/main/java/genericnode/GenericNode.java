@@ -5,10 +5,7 @@
  */
 package genericnode;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Blob;
@@ -49,6 +46,8 @@ public class GenericNode
                 String val = (args.length > 4) ? args[4] : "";
                 // insert code to make RMI client request 
             }
+
+            /// TCP CLIENT
             if (args[0].equals("tc"))
             {
                 System.out.println("TCP CLIENT");
@@ -57,26 +56,32 @@ public class GenericNode
                 String cmd = args[3];
                 String key = (args.length > 4) ? args[4] : "";
                 String val = (args.length > 5) ? args[5] : "";
+                // todo handle invalid input args
+
+                // todo should we use this object to send to server?
+                // todo or send it as a string?
                 SimpleEntry<String, String> se = new SimpleEntry<String, String>(key, val);
+                ExtendedEntry<String, String> ee = new ExtendedEntry<String, String>(se, cmd);
                 // insert code to make TCP client request to server at addr:port
                 try (Socket socket = new Socket(addr, port)) {
-                    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                    out.println(cmd + " " + key + " " + val);
-                    System.out.println("Sent request to server");
+                    // byte stream for sending
+                    ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+                    out.writeObject(ee);
+                    out.flush();
+                    System.out.println("Sent object to server");
+                    System.out.println("method: " + ee.getMethodName()+ " " + ee.getKey() + " " + se.getValue());
+                    // byte stream for receiving
                     BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    //String response = in.readLine();
                     StringBuilder response = new StringBuilder();
                     response.append(in.readLine());
-                    response.append("\n");
-                    response.append(in.readLine());
-
-                    System.out.println("Received response from server: " + response);
+                    System.out.println("Received response from server: \n"  + response);
                 } catch (IOException ex) {
                     System.out.println("Client exception: " + ex.getMessage());
                     ex.printStackTrace();
                 }
             }
 
+            /// TCP SERVER
             if (args[0].equals("ts"))
             {
                 System.out.println("TCP SERVER");
@@ -89,46 +94,39 @@ public class GenericNode
                     while (true) {
                         Socket socket = serverSocket.accept();
                         System.out.println("New client connected");
+                        //object stream for receiving
+                        ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+                        ExtendedEntry<String, String> entry = (ExtendedEntry<String,String>) in.readObject();
+                        System.out.println("Received request: " + " " + entry.getMethodName()
+                                                                + " " + entry.getKey()
+                                                                + " " + entry.getValue());
 
-                        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                        String request = in.readLine();
-                        System.out.println("Received request: " + request);
-
+                        //byte stream for sending
                         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                        out.println("Response from server!!!!!!");
-                        String[] parts = request.split(" ");
-                        String cmd = parts[0];
-                        String key = parts[1];
-                        String val = "";
-                        if(cmd.equals("put") | cmd.equals("del")){
-                            val = parts[2];
-                        }
 
-                        //exception handling
-                        //access null key for PUT
-
-                        if (cmd.equals("put")) {
-                            keyValueStorage.put(key, val);
-                            out.println("PUT " + key + " " + val);
-                        } else if (cmd.equals("get")) {
-                            String value = keyValueStorage.get(key);
-                            out.println("GET " + key + " " + value);
-                        } else if (cmd.equals("del")) {
-                            keyValueStorage.delete(key);
-                            out.println("DEL " + key);
-                        } else if (cmd.equals("store")) {
+                        if (entry.getMethodName().equals("put")) {
+                            keyValueStorage.put(entry.getKey(), entry.getValue());
+                            out.println("PUT " + entry.getKey() + " " + entry.getValue());
+                        } else if (entry.getMethodName().equals("get")) {
+                            String value = keyValueStorage.get(entry.getKey());
+                            out.println("GET " + entry.getKey() + " " + value);
+                        } else if (entry.getMethodName().equals("del")) {
+                            keyValueStorage.delete(entry.getKey());
+                            out.println("DEL " + entry.getKey());
+                        } else if (entry.getMethodName().equals("store")) {
                             out.println("STORE " + keyValueStorage);
-                        } else if (cmd.equals("exit")) {
+                        } else if (entry.getMethodName().equals("exit")) {
                             out.println("EXIT");
                             break;
                         }
-
 
                     }
 
                 } catch (IOException ex) {
                     System.out.println("Server exception: " + ex.getMessage());
                     ex.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
                 }
 
             }
