@@ -6,8 +6,7 @@
 package genericnode;
 
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 
@@ -116,7 +115,7 @@ public class GenericNode
                                     System.exit(0);
                                 }
                                 // process the request
-                                serverProcess(entry, keyValueStorage, out);
+                                TCPServerProcess(entry, keyValueStorage, out);
                                 out.close();
                             } catch (IOException | ClassNotFoundException ex) {
                                 System.out.println("Server exception: " + ex.getMessage());
@@ -131,25 +130,115 @@ public class GenericNode
                 }
 
             }
+
+
+            /// UDP CLIENT
             if (args[0].equals("uc"))
             {
-                System.out.println("UDP CLIENT");
+                //System.out.println("UDP CLIENT");
                 String addr = args[1];
                 int sendport = Integer.parseInt(args[2]);
                 int recvport = sendport + 1;
                 String cmd = args[3];
                 String key = (args.length > 4) ? args[4] : "";
                 String val = (args.length > 5) ? args[5] : "";
+
                 SimpleEntry<String, String> se = new SimpleEntry<String, String>(key, val);
+                ExtendedEntry<String, String> ee = new ExtendedEntry<String, String>(se, cmd);
                 // insert code to make UDP client request to server at addr:send/recvport
+
+
+                try {
+                    String hostName = InetAddress.getLocalHost().getHostName();
+                    InetSocketAddress sourceSocketAddress = new InetSocketAddress(hostName, recvport);
+                    try(DatagramSocket socket = new DatagramSocket(sourceSocketAddress)) {
+                        // byte array for sending
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        ObjectOutputStream os = new ObjectOutputStream(out);
+                        os.writeObject(ee);
+                        byte[] sendData = out.toByteArray();
+                        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(addr), sendport);
+                        socket.send(sendPacket);
+
+                        // byte array for receiving
+                        byte[] receiveData = new byte[65535];
+                        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                        socket.receive(receivePacket);
+
+                        byte[] data = receivePacket.getData();
+                        ByteArrayInputStream in = new ByteArrayInputStream(data);
+                        ObjectInputStream is = new ObjectInputStream(in);
+                        StringBuilder response = new StringBuilder();
+                        if(cmd.equals("store")){
+                            response.append("\n");
+                        }
+                        response.append((String) is.readObject());
+                        System.out.println("server response: " + response);
+
+                    }catch(SocketException e){
+                        System.out.println("Socket Exception: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+
+                } catch (IOException | ClassNotFoundException ex) {
+                    System.out.println("Client exception: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
             }
+
+            /// UDP SERVER
             if (args[0].equals("us"))
             {
                 System.out.println("UDP SERVER");
+                SharedResource keyValueStorage = new SharedResource();
                 int port = Integer.parseInt(args[1]);
-                // insert code to start UDP server on port
-            }
 
+                try (DatagramSocket serverSocket = new DatagramSocket(port)) {
+                    System.out.println("Server is listening on port " + port);
+
+                    while (true) {
+                        byte[] buffer = new byte[65535];
+                        DatagramPacket incoming = new DatagramPacket(buffer, buffer.length);
+                        serverSocket.receive(incoming);
+
+                        new Thread(() -> {
+                            try {
+                                // byte array for receiving
+                                byte[] data = incoming.getData();
+                                ByteArrayInputStream in = new ByteArrayInputStream(data);
+                                ObjectInputStream is = new ObjectInputStream(in);
+
+                                ExtendedEntry<String, String> entry = (ExtendedEntry<String,String>) is.readObject();
+                                System.out.println("Received request: " + " " + entry.getMethodName()
+                                                                        + " " + entry.getKey()
+                                                                        + " " + entry.getValue());
+
+                                // process the request
+                                String response = UDPServerProcess(entry, keyValueStorage);
+
+                                // byte array for sending
+                                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                                ObjectOutputStream os = new ObjectOutputStream(out);
+                                os.writeObject(response);
+
+                                byte[] responseData = out.toByteArray();
+                                DatagramPacket responsePacket = new DatagramPacket(
+                                        responseData, responseData.length, incoming.getAddress(), incoming.getPort());
+
+                                serverSocket.send(responsePacket);
+
+                            } catch (IOException | ClassNotFoundException ex) {
+                                System.out.println("Server exception: " + ex.getMessage());
+                                ex.printStackTrace();
+                            }
+                        }).start();
+                    }
+
+                } catch (IOException ex) {
+                    System.out.println("Server exception: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+            }
         }
         else
         {
@@ -173,7 +262,7 @@ public class GenericNode
         
         
     }
-    public static void serverProcess(ExtendedEntry<String,String> entry, SharedResource keyValueStorage, PrintWriter out){
+    public static void TCPServerProcess(ExtendedEntry<String,String> entry, SharedResource keyValueStorage, PrintWriter out){
         switch (entry.getMethodName()) {
             case "put":
                 keyValueStorage.put(entry.getKey(), entry.getValue());
@@ -196,6 +285,33 @@ public class GenericNode
         }
 
     }
-    
+    public static String UDPServerProcess(ExtendedEntry<String,String> entry, SharedResource keyValueStorage){
+        switch (entry.getMethodName()) {
+            case "put":
+                keyValueStorage.put(entry.getKey(), entry.getValue());
+                return entry.getMethodName() + " key=" + entry.getKey();
+            case "get":
+                String value = keyValueStorage.get(entry.getKey());
+                return entry.getMethodName() + " key=" + entry.getKey() + " val=" + value;
+            case "del":
+                keyValueStorage.delete(entry.getKey());
+                return entry.getMethodName() + " key=" + entry.getKey();
+            case "store":
+                ArrayList<StringBuilder> keyValueList = keyValueStorage.store();
+                StringBuilder response = new StringBuilder();
+                for (StringBuilder keyValue : keyValueList) {
+                    response.append(keyValue).append("\n");
+                }
+                // truncate if size > 65000
+                if(response.length() > 65000){
+                    response.delete(65000, response.length());
+                    response.insert(0, "TRIMMED:\n");
+                }
+
+                return response.toString();
+            default:
+                return "Invalid command";
+        }
+    }
     
 }
