@@ -8,8 +8,8 @@ package genericnode;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.Blob;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 
 /**
  *
@@ -50,7 +50,7 @@ public class GenericNode
             /// TCP CLIENT
             if (args[0].equals("tc"))
             {
-                System.out.println("TCP CLIENT");
+                //System.out.println("TCP CLIENT");
                 String addr = args[1];
                 int port = Integer.parseInt(args[2]);
                 String cmd = args[3];
@@ -58,8 +58,7 @@ public class GenericNode
                 String val = (args.length > 5) ? args[5] : "";
                 // todo handle invalid input args
 
-                // todo should we use this object to send to server?
-                // todo or send it as a string?
+
                 SimpleEntry<String, String> se = new SimpleEntry<String, String>(key, val);
                 ExtendedEntry<String, String> ee = new ExtendedEntry<String, String>(se, cmd);
                 // insert code to make TCP client request to server at addr:port
@@ -68,13 +67,19 @@ public class GenericNode
                     ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
                     out.writeObject(ee);
                     out.flush();
-                    System.out.println("Sent object to server");
-                    System.out.println("method: " + ee.getMethodName()+ " " + ee.getKey() + " " + se.getValue());
                     // byte stream for receiving
                     BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     StringBuilder response = new StringBuilder();
-                    response.append(in.readLine());
-                    System.out.println("Received response from server: \n"  + response);
+
+                    String line;
+                    if(cmd.equals("store")){
+                        response.append("\n");
+                    }
+                    while((line = in.readLine()) != null) {
+                        response.append(line).append("\n");
+                    }
+                    response.delete(response.length()-1, response.length());
+                    System.out.println("server response:"+ response);
                 } catch (IOException ex) {
                     System.out.println("Client exception: " + ex.getMessage());
                     ex.printStackTrace();
@@ -100,26 +105,15 @@ public class GenericNode
                         System.out.println("Received request: " + " " + entry.getMethodName()
                                                                 + " " + entry.getKey()
                                                                 + " " + entry.getValue());
-
-                        //byte stream for sending
-                        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-
-                        if (entry.getMethodName().equals("put")) {
-                            keyValueStorage.put(entry.getKey(), entry.getValue());
-                            out.println("PUT " + entry.getKey() + " " + entry.getValue());
-                        } else if (entry.getMethodName().equals("get")) {
-                            String value = keyValueStorage.get(entry.getKey());
-                            out.println("GET " + entry.getKey() + " " + value);
-                        } else if (entry.getMethodName().equals("del")) {
-                            keyValueStorage.delete(entry.getKey());
-                            out.println("DEL " + entry.getKey());
-                        } else if (entry.getMethodName().equals("store")) {
-                            out.println("STORE " + keyValueStorage);
-                        } else if (entry.getMethodName().equals("exit")) {
-                            out.println("EXIT");
+                        // if command is exit, break
+                        if(entry.getMethodName().equals("exit")){
                             break;
                         }
-
+                        // byte stream for sending
+                        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                        // process the request
+                        serverProcess(entry, keyValueStorage, out);
+                        out.close();
                     }
 
                 } catch (IOException ex) {
@@ -172,7 +166,29 @@ public class GenericNode
         
         
     }
+    public static void serverProcess(ExtendedEntry<String,String> entry, SharedResource keyValueStorage, PrintWriter out){
+        switch (entry.getMethodName()) {
+            case "put":
+                keyValueStorage.put(entry.getKey(), entry.getValue());
+                out.println(entry.getMethodName() + " key=" + entry.getKey());
+                break;
+            case "get":
+                String value = keyValueStorage.get(entry.getKey());
+                out.println(entry.getMethodName() + " key=" + entry.getKey() + " val=" + value);
+                break;
+            case "del":
+                keyValueStorage.delete(entry.getKey());
+                out.println(entry.getMethodName() + " key=" + entry.getKey());
+                break;
+            case "store":
+                ArrayList<StringBuilder> keyValueList = keyValueStorage.store();
+                for (StringBuilder keyValue : keyValueList) {
+                    out.println(keyValue);
+                }
+                break;
+        }
 
+    }
     
     
 }
