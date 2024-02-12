@@ -17,13 +17,17 @@
 Run on JDK 11.
 ## Usage
 ### TCP Sever Test
-1. **Run setupTCP.sh for:**
+1. Edit docker_server/runserver.sh
+    - Uncomment the line for server type you want to test
+    - For example, if you want to test TCP server, uncomment the line for TCP server ("java -jar GenericNode.jar ts 1234")
+    - Comment out all other server types
+2. **Run setupTCP.sh for:**
    - Build the project
    - Build the docker image
    - Run the following docker container
      - TCP server will be running on port 8080:1234 
      - TCP client will be running
-2. **Run performTCP.sh:**
+3. **Run performTCP.sh:**
    - First test is for single thread server and client
    - Second test is for multi thread server and client
 ### UDP Sever Test
