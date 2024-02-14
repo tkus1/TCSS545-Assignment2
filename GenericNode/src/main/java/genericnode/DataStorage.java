@@ -21,7 +21,7 @@ public class DataStorage {
     public static ArrayList<String> store() {
         ArrayList<String> arrayList = new ArrayList<>();
         for(String key : map.keySet()) {
-            String entry = key + " " + map.get(key);
+            String entry = "key:" + key + ":value:" + map.get(key)+ ":";
             arrayList.add(entry);
         }
         return arrayList;

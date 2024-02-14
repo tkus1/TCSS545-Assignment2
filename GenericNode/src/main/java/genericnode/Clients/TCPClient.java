@@ -11,28 +11,35 @@ public class TCPClient implements Client {
     Socket clientSocket;
     DataOutputStream outToServer = null;
     DataInputStream inFromServer = null;
+
+    private final String serverResponse = "server response:";
+    private final String exitStatement = "<the server then exits>";
+
     @Override
     public void put(String key, String value) throws IOException {
         outToServer.writeUTF(key);
         outToServer.writeUTF(value);
+        System.out.println(serverResponse + "put key=" + key);
         clientSocket.close();
     }
 
     @Override
     public String get(String key) throws IOException {
         outToServer.writeUTF(key);
-        System.out.println(inFromServer.readUTF());
+        System.out.println(serverResponse + "get key=" + key + " get value=" + inFromServer.readUTF());
         return null;
     }
 
     @Override
     public void del(String key) throws IOException {
         outToServer.writeUTF(key);
+        System.out.println(serverResponse + "delete key="+ key);
     }
 
     @Override
     public void store() throws IOException {
         String entry = inFromServer.readUTF();
+        System.out.println(serverResponse);
         while(!entry.equals("Finished")) {
             System.out.println(entry);
             entry = inFromServer.readUTF();
@@ -41,7 +48,7 @@ public class TCPClient implements Client {
 
     @Override
     public void exit() {
-
+        System.out.println(exitStatement);
     }
 
     @Override
