@@ -11,7 +11,7 @@ public class DataStorage {
     }
 
     public static String get(String key) {
-        return map.getOrDefault(key, "");
+        return map.getOrDefault(key, "not found");
     }
 
     public static void del(String key) {
