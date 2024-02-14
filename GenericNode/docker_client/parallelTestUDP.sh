@@ -1,6 +1,5 @@
 server=localhost
-port=8080
-# TCP test cannot run in parallel because the program specifies the receive port (input port number + 1).
+port=8081
 #server=UDPServer
 #port=1234
 commands=(
@@ -154,7 +153,7 @@ commands=(
 "java -jar GenericNode.jar uc $server $port get eZia6rief"
 "java -jar GenericNode.jar uc $server $port get 2HmK"
 "java -jar GenericNode.jar uc $server $port put Du9ruKiek laidie4ieShiquoh7ahGhahfuJu5TaeThaiDooc"
-"java -jar GenericNode.jar uc $server $port store"
+
 )
 printf "%s\n" "${commands[@]}" | parallel
 #"java -jar GenericNode.jar uc $server $port exit
