@@ -4,15 +4,15 @@ import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class Server {
+public interface Server {
 
-    public abstract void startServer(int port) throws IOException;
+    void startServer(int port) throws IOException;
 
-    public abstract void put(String key, String value) throws IOException;
-    public abstract String get(String key) throws IOException;
-    public abstract void del(String key);
-    public abstract void store() throws IOException;
-    public abstract void exit() throws IOException;
-    public abstract void executeOperation(String operation) throws IOException;
+    void put(String key, String value) throws IOException;
+    String get(String key) throws IOException;
+    void del(String key);
+    void store() throws IOException;
+    void exit() throws IOException;
+    void executeOperation(String operation) throws IOException;
 
 }

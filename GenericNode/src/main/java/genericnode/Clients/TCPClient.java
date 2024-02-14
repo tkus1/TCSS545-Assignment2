@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.AbstractMap.SimpleEntry;
 
-public class TCPClient extends Client {
+public class TCPClient implements Client {
 
     Socket clientSocket;
     DataOutputStream outToServer = null;

@@ -10,7 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class TCPServer extends Server {
+public class TCPServer implements Server {
     ServerSocket tcpServer = null;
     Socket connectionSocket = null;
     DataInputStream inFromClient = null;
