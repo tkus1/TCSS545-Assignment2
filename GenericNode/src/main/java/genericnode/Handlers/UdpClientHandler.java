@@ -1,12 +1,6 @@
-// Java
-
 package genericnode.Handlers;
 
 import genericnode.Servers.UDPServer;
-
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -28,28 +22,11 @@ public class UdpClientHandler extends ClientHandler {
         try {
             String data = new String(packet.getData(), 0, packet.getLength());
 
-            // 3. Parse operation and key-value
-            String[] parts = data.split(" ");
-            String operation = parts[0];
-            String key = parts.length > 1 ? parts[1] : null;
-            String value = parts.length > 2 ? parts[2] : null;
-            if (operation.equals("put")) {
-                server.put(key, value);
-
-            } else if (operation.equals("get")) {
-                value = server.get(key);
-                sendResponse(value);
-            } else if (operation.equals("del")) {
-                server.del(key);
-            } else if (operation.equals("store")) {
-                ArrayList<String> entries = server.store();
-                for(String entry : entries) {
-                    sendResponse(entry);
-                }
-                sendResponse("Finished");
-            } else {
-                server.exit();
-            }
+            String[] parsedData = parseData(data);
+            String operation = parsedData[0];
+            String key = parsedData[1];
+            String value = parsedData[2];
+            executeOperation(operation, key, value);
         } catch (IOException e) {
             e.printStackTrace();
             try {
@@ -66,10 +43,39 @@ public class UdpClientHandler extends ClientHandler {
                 responseData, responseData.length, packet.getAddress(), packet.getPort());
         socket.send(responsePacket);
     }
+
     private String receivePacketFromClient() throws IOException {
         byte[] buffer = new byte[65535];
         DatagramPacket incomingPacket = new DatagramPacket(buffer, buffer.length);
         socket.receive(incomingPacket);
         return new String(incomingPacket.getData(), 0, incomingPacket.getLength());
+    }
+
+    private String[] parseData(String data) {
+        String[] parts = data.split(" ");
+        String operation = parts[0];
+        String key = parts.length > 1 ? parts[1] : null;
+        String value = parts.length > 2 ? parts[2] : null;
+        return new String[]{operation, key, value};
+    }
+
+    private void executeOperation(String operation, String key, String value) throws IOException {
+        if (operation.equals("put")) {
+            server.put(key, value);
+
+        } else if (operation.equals("get")) {
+            value = server.get(key);
+            sendResponse(value);
+        } else if (operation.equals("del")) {
+            server.del(key);
+        } else if (operation.equals("store")) {
+            ArrayList<String> entries = server.store();
+            for(String entry : entries) {
+                sendResponse(entry);
+            }
+            sendResponse("Finished");
+        } else {
+            server.exit();
+        }
     }
 }
