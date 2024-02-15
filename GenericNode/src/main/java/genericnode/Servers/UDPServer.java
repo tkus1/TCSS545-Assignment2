@@ -3,17 +3,15 @@ package genericnode.Servers;
 import genericnode.DataStorage;
 import genericnode.Handlers.ClientHandler;
 import genericnode.Handlers.UdpClientHandler;
-
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 
 public class UDPServer implements Server{
+
     private DatagramSocket udpServer = null;
+
     @Override
     public void startServer(int port) throws IOException {
         udpServer = new DatagramSocket(port);
