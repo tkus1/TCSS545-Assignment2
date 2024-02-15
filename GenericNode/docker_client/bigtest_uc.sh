@@ -151,4 +151,4 @@ java -jar GenericNode.jar uc $server $port get eZia6rief
 java -jar GenericNode.jar uc $server $port get 2HmK  
 java -jar GenericNode.jar uc $server $port put Du9ruKiek laidie4ieShiquoh7ahGhahfuJu5TaeThaiDooc
 java -jar GenericNode.jar uc $server $port store
-java -jar GenericNode.jar uc $server $port exit
+
