@@ -1,4 +1,4 @@
-package genericnode.Servers;
+package genericnode.servers;
 
 import java.io.IOException;
 import java.util.ArrayList;

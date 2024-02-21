@@ -1,4 +1,4 @@
-package genericnode.Clients;
+package genericnode.clients;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

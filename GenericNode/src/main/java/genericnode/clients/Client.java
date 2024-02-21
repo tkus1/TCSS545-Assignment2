@@ -1,4 +1,4 @@
-package genericnode.Clients;
+package genericnode.clients;
 
 import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
