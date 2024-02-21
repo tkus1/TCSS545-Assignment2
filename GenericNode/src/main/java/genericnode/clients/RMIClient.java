@@ -1,13 +1,7 @@
 package genericnode.clients;
 
 import genericnode.servers.Store;
-
-import java.io.IOException;
-import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 
 public class RMIClient {

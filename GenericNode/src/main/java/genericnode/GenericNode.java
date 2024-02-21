@@ -44,7 +44,7 @@ public class GenericNode
                 catch (Exception e)
                 {
                     System.out.println("Error initializing RMI server.");
-                    System.err.println("Server exception: " + e.toString());
+                    System.err.println("Server exception: " + e);
                     e.printStackTrace();
                 }
             }

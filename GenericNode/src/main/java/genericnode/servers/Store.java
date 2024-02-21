@@ -1,7 +1,5 @@
 package genericnode.servers;
 
-import genericnode.clients.RMIClient;
-
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
