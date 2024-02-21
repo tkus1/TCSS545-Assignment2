@@ -1,15 +1,24 @@
 package genericnode.clients;
 
 import genericnode.servers.Store;
+
+import java.io.IOException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 
-public class RMIClient {
+public class RMIClient implements Client{
     private final Store stub;
-    public RMIClient(Store stub) {
-        this.stub = stub;
+    public RMIClient(String addr) throws RemoteException {
+        Registry registry = LocateRegistry.getRegistry(addr);
+        try {
+            this.stub = (Store) registry.lookup("Store");
+        } catch (NotBoundException e) {
+            throw new RuntimeException(e);
+        }
     }
-
 
     public void put(String key, String value) throws RemoteException {
         stub.put(key, value);
@@ -40,11 +49,14 @@ public class RMIClient {
         }
     }
 
-    public void exit() throws RemoteException {
-        stub.exit();
+    public void exit() {
+        try {
+            stub.exit();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("Closing client...");
     }
-
 
     public void executeTask(String cmd, String key, String val) throws RemoteException {
 

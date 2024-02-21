@@ -45,4 +45,19 @@ public class RMIServer implements Store {
         }
     }
 
+    public void setupAndBindServer() {
+        try {
+            RMIServer obj = new RMIServer();
+            Store stub = (Store) UnicastRemoteObject.exportObject(obj, 0);
+            Registry registry = LocateRegistry.getRegistry(); // This uses the default port 1099
+            registry.bind("Store", stub);
+
+            System.out.println("RMIServer bound in registry");
+        } catch (RemoteException e) {
+            System.err.println("Remote exception: " + e.toString());
+        } catch (java.rmi.AlreadyBoundException e) {
+            System.err.println("AlreadyBoundException: " + e.toString());
+        }
+    }
+
 }
