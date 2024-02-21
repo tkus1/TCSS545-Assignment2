@@ -5,11 +5,14 @@
  */
 package genericnode;
 
-import genericnode.Clients.TCPClient;
-import genericnode.Servers.TCPServer;
-
+import java.rmi.registry.Registry;
+import java.rmi.registry.LocateRegistry;
 import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
+import java.rmi.server.UnicastRemoteObject;
+import genericnode.servers.*;
+import genericnode.clients.*;
+
 
 /**
  *
@@ -29,11 +32,19 @@ public class GenericNode
                 System.out.println("RMI SERVER");
                 try
                 {
-                    // insert code to start RMI Server
+                    RMIServer obj = new RMIServer();
+                    Store stub = (Store) UnicastRemoteObject.exportObject(obj, 0);
+
+                    // Bind the remote object's stub in the registry
+                    Registry registry = LocateRegistry.getRegistry();
+                    registry.bind("Store", stub);
+
+                    System.err.println("Server ready");
                 }
                 catch (Exception e)
                 {
                     System.out.println("Error initializing RMI server.");
+                    System.err.println("Server exception: " + e.toString());
                     e.printStackTrace();
                 }
             }
@@ -45,6 +56,17 @@ public class GenericNode
                 String key = (args.length > 3) ? args[3] : "";
                 String val = (args.length > 4) ? args[4] : "";
                 // insert code to make RMI client request
+                try {
+                    String name = "Store";
+                    Registry registry = LocateRegistry.getRegistry(addr);
+                    Store stub = (Store) registry.lookup(name);
+                    RMIClient client = new RMIClient(stub);
+                    client.executeTask(cmd, key, val);
+
+                } catch (Exception e) {
+                    System.err.println("ComputePi exception:");
+                    e.printStackTrace();
+                }
             }
             if (args[0].equals("tc"))
             {
