@@ -24,10 +24,9 @@ public class TCPClient implements Client {
     }
 
     @Override
-    public String get (String key) throws IOException {
+    public void get (String key) throws IOException {
         outToServer.writeUTF(key);
         System.out.println(serverResponse + "get key=" + key + " get value=" + inFromServer.readUTF());
-        return null;
     }
 
     @Override
@@ -51,7 +50,7 @@ public class TCPClient implements Client {
         System.out.println(exitStatement);
     }
 
-    @Override
+
     public void executeOperation (String operation, SimpleEntry<String, String> entry) throws IOException {
         outToServer.writeUTF(operation);
         if (operation.equals("put")) {
@@ -67,7 +66,7 @@ public class TCPClient implements Client {
         }
     }
 
-    @Override
+
     public void connect (String host, int port) throws IOException {
         clientSocket = new Socket(host, port);
         outToServer = new DataOutputStream(clientSocket.getOutputStream());
