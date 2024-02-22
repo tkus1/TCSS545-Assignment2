@@ -2,7 +2,7 @@
 # Build java project
 ./build_project.sh
 
-docker image build -t ubuntu:UDPServer docker_server/
+docker image build -t ubuntu:UDPServer docker_server/UDP_server/
 docker image build -t ubuntu:UDPClient docker_client/
 
 echo "Stopping running UDP containers..."

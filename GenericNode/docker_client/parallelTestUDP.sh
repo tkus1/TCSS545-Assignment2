@@ -1,7 +1,7 @@
-server=localhost
-port=8081
-#server=UDPServer
-#port=1234
+#server=localhost
+#port=8081
+server=UDPServer
+port=1234
 commands=(
 "java -jar GenericNode.jar uc $server $port put mD7 booLeejae8ne0lahgoos"
 "java -jar GenericNode.jar uc $server $port put 1VB ahghukooy8ooYi7eeChe"
