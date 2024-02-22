@@ -1,6 +1,6 @@
 #!/bin/bash
 # Build java project
-./buildAndCopy.sh
+./build_project.sh
 
 docker image build -t ubuntu:UDPServer docker_server/
 docker image build -t ubuntu:UDPClient docker_client/

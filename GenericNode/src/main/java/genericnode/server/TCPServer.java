@@ -1,9 +1,8 @@
-package genericnode.servers;
+package genericnode.server;
 
 import genericnode.DataStorage;
-import genericnode.handlers.ClientHandler;
-import genericnode.handlers.TcpClientHandler;
-
+import genericnode.handler.ClientHandler;
+import genericnode.handler.TcpClientHandler;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;

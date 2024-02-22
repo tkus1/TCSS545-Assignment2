@@ -1,7 +1,6 @@
-package genericnode.handlers;
+package genericnode.handler;
 
-import genericnode.servers.TCPServer;
-
+import genericnode.server.TCPServer;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -12,7 +11,7 @@ public class TcpClientHandler extends ClientHandler {
 
     private final Socket connectionSocket;
 
-    public TcpClientHandler(Socket connectionSocket, TCPServer tcpServer) throws IOException {
+    public TcpClientHandler(Socket connectionSocket, TCPServer tcpServer) {
         super(tcpServer);
         this.connectionSocket = connectionSocket;
     }

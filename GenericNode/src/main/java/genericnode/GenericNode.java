@@ -5,14 +5,10 @@
  */
 package genericnode;
 
-import java.rmi.registry.Registry;
-import java.rmi.registry.LocateRegistry;
 import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
-import java.rmi.server.UnicastRemoteObject;
-import genericnode.servers.*;
-import genericnode.clients.*;
-
+import genericnode.server.*;
+import genericnode.client.*;
 
 /**
  *
@@ -34,12 +30,6 @@ public class GenericNode
                 {
                     RMIServer server = new RMIServer();
                     server.setupAndBindServer();
-//                    Store stub = (Store) UnicastRemoteObject.exportObject(obj, 0);
-//                    // Bind the remote object's stub in the registry
-//                    Registry registry = LocateRegistry.getRegistry();
-//                    registry.bind("Store", stub);
-//
-//                    System.err.println("Server ready");
                 }
                 catch (Exception e)
                 {
@@ -87,7 +77,6 @@ public class GenericNode
                 System.out.println("UDP CLIENT");
                 String addr = args[1];
                 int sendport = Integer.parseInt(args[2]);
-                int recvport = sendport + 1;
                 String cmd = args[3];
                 String key = (args.length > 4) ? args[4] : "";
                 String val = (args.length > 5) ? args[5] : "";

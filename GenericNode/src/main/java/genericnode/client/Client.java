@@ -1,7 +1,6 @@
-package genericnode.clients;
+package genericnode.client;
 
 import java.io.IOException;
-import java.util.AbstractMap.SimpleEntry;
 
 public interface Client {
     void put(String key, String value) throws IOException;

@@ -1,4 +1,4 @@
-package genericnode.servers;
+package genericnode.server;
 
 import genericnode.DataStorage;
 import java.rmi.NotBoundException;
@@ -54,9 +54,9 @@ public class RMIServer implements Store {
 
             System.out.println("RMIServer bound in registry");
         } catch (RemoteException e) {
-            System.err.println("Remote exception: " + e.toString());
+            System.err.println("Remote exception: " + e);
         } catch (java.rmi.AlreadyBoundException e) {
-            System.err.println("AlreadyBoundException: " + e.toString());
+            System.err.println("AlreadyBoundException: " + e);
         }
     }
 

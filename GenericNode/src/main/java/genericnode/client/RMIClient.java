@@ -1,8 +1,6 @@
-package genericnode.clients;
+package genericnode.client;
 
-import genericnode.servers.Store;
-
-import java.io.IOException;
+import genericnode.server.Store;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;

@@ -1,9 +1,8 @@
-package genericnode.handlers;
+package genericnode.handler;
 
-import genericnode.servers.Server;
+import genericnode.server.Server;
 
 public abstract class ClientHandler implements Runnable{
-
 
     protected Server server;
 

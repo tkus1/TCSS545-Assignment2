@@ -1,4 +1,4 @@
-./buildAndCopy.sh
+./build_project.sh
 
 docker image build -t ubuntu:TCPServer docker_server/
 docker image build -t ubuntu:TCPClient docker_client/

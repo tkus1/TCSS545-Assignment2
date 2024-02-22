@@ -1,4 +1,4 @@
-package genericnode.servers;
+package genericnode.server;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
