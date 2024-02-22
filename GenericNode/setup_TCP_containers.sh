@@ -1,6 +1,6 @@
 ./build_project.sh
 
-docker image build -t ubuntu:TCPServer docker_server/
+docker image build -t ubuntu:TCPServer docker_server/TCP_server/
 docker image build -t ubuntu:TCPClient docker_client/
 echo "Stopping running TCP containers..."
 #docker stop TCPServer
