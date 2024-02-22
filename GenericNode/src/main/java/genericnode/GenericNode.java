@@ -91,14 +91,19 @@ public class GenericNode
                 String cmd = args[3];
                 String key = (args.length > 4) ? args[4] : "";
                 String val = (args.length > 5) ? args[5] : "";
-                SimpleEntry<String, String> se = new SimpleEntry<String, String>(key, val);
+                SimpleEntry<String, String> entry = new SimpleEntry<String, String>(key, val);
                 // insert code to make UDP client request to server at addr:send/recvport
+                UDPClient client = new UDPClient();
+                client.connect(addr, sendport);
+                client.executeOperation(cmd, entry);
             }
             if (args[0].equals("us"))
             {
                 System.out.println("UDP SERVER");
                 int port = Integer.parseInt(args[1]);
                 // insert code to start UDP server on port
+                UDPServer server = new UDPServer();
+                server.startServer(port);
             }
 
         }
