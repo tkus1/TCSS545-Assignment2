@@ -1,0 +1,14 @@
+/Users/heyuanw/Desktop/TCSS 558/TCSS545-Assignment2/GenericNode/src/main/java/genericnode/client/Client.java
+/Users/heyuanw/Desktop/TCSS 558/TCSS545-Assignment2/GenericNode/src/main/java/genericnode/server/TCPServer.java
+/Users/heyuanw/Desktop/TCSS 558/TCSS545-Assignment2/GenericNode/src/main/java/genericnode/server/UDPServer.java
+/Users/heyuanw/Desktop/TCSS 558/TCSS545-Assignment2/GenericNode/src/main/java/genericnode/handler/TcpClientHandler.java
+/Users/heyuanw/Desktop/TCSS 558/TCSS545-Assignment2/GenericNode/src/main/java/genericnode/DataStorage.java
+/Users/heyuanw/Desktop/TCSS 558/TCSS545-Assignment2/GenericNode/src/main/java/genericnode/GenericNode.java
+/Users/heyuanw/Desktop/TCSS 558/TCSS545-Assignment2/GenericNode/src/main/java/genericnode/server/RMIServer.java
+/Users/heyuanw/Desktop/TCSS 558/TCSS545-Assignment2/GenericNode/src/main/java/genericnode/client/UDPClient.java
+/Users/heyuanw/Desktop/TCSS 558/TCSS545-Assignment2/GenericNode/src/main/java/genericnode/handler/UdpClientHandler.java
+/Users/heyuanw/Desktop/TCSS 558/TCSS545-Assignment2/GenericNode/src/main/java/genericnode/server/Store.java
+/Users/heyuanw/Desktop/TCSS 558/TCSS545-Assignment2/GenericNode/src/main/java/genericnode/client/TCPClient.java
+/Users/heyuanw/Desktop/TCSS 558/TCSS545-Assignment2/GenericNode/src/main/java/genericnode/client/RMIClient.java
+/Users/heyuanw/Desktop/TCSS 558/TCSS545-Assignment2/GenericNode/src/main/java/genericnode/handler/ClientHandler.java
+/Users/heyuanw/Desktop/TCSS 558/TCSS545-Assignment2/GenericNode/src/main/java/genericnode/server/Server.java
