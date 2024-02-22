@@ -1,4 +1,5 @@
-server=localhost
+#server=localhost
+server=RMIserver
 java -jar GenericNode.jar rmic $server put mD7 booLeejae8ne0lahgoos
 java -jar GenericNode.jar rmic $server put 1VB ahghukooy8ooYi7eeChe
 java -jar GenericNode.jar rmic $server put 8CX eK8zae6LaeTh2Niijeih
