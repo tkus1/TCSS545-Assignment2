@@ -5,13 +5,14 @@
  */
 package genericnode;
 
-import genericnode.Clients.TCPClient;
-import genericnode.Clients.UDPClient;
-import genericnode.Servers.TCPServer;
-import genericnode.Servers.UDPServer;
-
+import java.rmi.registry.Registry;
+import java.rmi.registry.LocateRegistry;
 import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
+import java.rmi.server.UnicastRemoteObject;
+import genericnode.servers.*;
+import genericnode.clients.*;
+
 
 /**
  *
@@ -31,11 +32,19 @@ public class GenericNode
                 System.out.println("RMI SERVER");
                 try
                 {
-                    // insert code to start RMI Server
+                    RMIServer server = new RMIServer();
+                    server.setupAndBindServer();
+//                    Store stub = (Store) UnicastRemoteObject.exportObject(obj, 0);
+//                    // Bind the remote object's stub in the registry
+//                    Registry registry = LocateRegistry.getRegistry();
+//                    registry.bind("Store", stub);
+//
+//                    System.err.println("Server ready");
                 }
                 catch (Exception e)
                 {
                     System.out.println("Error initializing RMI server.");
+                    System.err.println("Server exception: " + e);
                     e.printStackTrace();
                 }
             }
@@ -47,6 +56,8 @@ public class GenericNode
                 String key = (args.length > 3) ? args[3] : "";
                 String val = (args.length > 4) ? args[4] : "";
                 // insert code to make RMI client request
+                RMIClient client = new RMIClient(addr);
+                client.executeTask(cmd, key, val);
             }
             if (args[0].equals("tc"))
             {
@@ -58,7 +69,6 @@ public class GenericNode
                 String val = (args.length > 5) ? args[5] : "";
                 SimpleEntry<String, String> entry = new SimpleEntry<String, String>(key, val);
                 // insert code to make TCP client request to server at addr:port
-//                Client client = clients.get(args[0]);
                 TCPClient client = new TCPClient();
                 client.connect(addr, port);
                 client.executeOperation(cmd, entry);
@@ -68,11 +78,9 @@ public class GenericNode
             {
                 System.out.println("TCP SERVER");
                 int port = Integer.parseInt(args[1]);
-//                Server server = servers.get(args[0]);
+                // insert code to start TCP server on port
                 TCPServer server = new TCPServer();
                 server.startServer(port);
-//                startTcpServer(port);
-                // insert code to start TCP server on port
             }
             if (args[0].equals("uc"))
             {
@@ -121,39 +129,5 @@ public class GenericNode
 
 
     }
-
-//    private static void startTcpServer(Integer port) throws IOException {
-//        try {
-//            ServerSocket tcpServer = new ServerSocket(port);
-//            while(true) {
-//                Socket connectionSocket = tcpServer.accept();
-//                System.out.println("###");
-//                DataInputStream inFromClient = new DataInputStream(connectionSocket.getInputStream());
-//                String key = inFromClient.readUTF();
-//                String value = inFromClient.readUTF();
-//                System.out.println("printing key: " +  key);
-//                System.out.println("Printing value: " + value);
-//            }
-//
-//        }
-//        catch (IOException e) {
-//            System.out.println(e);
-//            throw e;
-//        }
-//
-//    }
-
-//    private static void startTcpClient(String host, Integer port, SimpleEntry<String, String>entry) throws IOException {
-//        try {
-//            Socket clientSocket = new Socket(host, port);
-//
-//        } catch (IOException e) {
-//            System.out.println(e);
-//            throw e;
-//        }
-//
-//
-//    }
-
 
 }

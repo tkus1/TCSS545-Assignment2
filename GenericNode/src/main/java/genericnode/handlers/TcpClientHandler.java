@@ -1,6 +1,6 @@
-package genericnode.Handlers;
+package genericnode.handlers;
 
-import genericnode.Servers.TCPServer;
+import genericnode.servers.TCPServer;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
