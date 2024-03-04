@@ -54,8 +54,8 @@ public class UdpClientHandler extends ClientHandler {
     private String[] parseData(String data) {
         String[] parts = data.split(" ");
         String operation = parts[0];
-        String key = parts.length > 1 ? parts[1] : null;
-        String value = parts.length > 2 ? parts[2] : null;
+        String key = parts.length > 1 ? parts[1] : "";
+        String value = parts.length > 2 ? parts[2] : "";
         return new String[]{operation, key, value};
     }
 
