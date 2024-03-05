@@ -61,7 +61,7 @@ public class GenericNode
                 // insert code to make TCP client request to server at addr:port
                 TCPClient client = new TCPClient();
                 client.connect(addr, port);
-                client.executeOperation(cmd, entry);
+                 client.executeOperation(cmd, entry);
             }
 
             if (args[0].equals("ts"))
@@ -69,8 +69,9 @@ public class GenericNode
                 System.out.println("TCP SERVER");
                 int port = Integer.parseInt(args[1]);
                 // insert code to start TCP server on port
-                TCPServer server = new TCPServer();
-                server.startServer(port);
+                TCPServer server = new TCPServer(new ConfigFileGetOtherServersStrategy());
+
+                server.startServer(port,port+1); //todo reconsider this. Should server port be specified?
             }
             if (args[0].equals("uc"))
             {
@@ -92,7 +93,7 @@ public class GenericNode
                 int port = Integer.parseInt(args[1]);
                 // insert code to start UDP server on port
                 UDPServer server = new UDPServer();
-                server.startServer(port);
+                server.startServer(port,port+1); //todo reconsider this. Should server port be specified?
             }
 
         }
