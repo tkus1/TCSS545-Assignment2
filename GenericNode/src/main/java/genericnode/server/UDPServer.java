@@ -3,6 +3,8 @@ package genericnode.server;
 import genericnode.DataStorage;
 import genericnode.handler.ClientHandler;
 import genericnode.handler.UdpClientHandler;
+
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -11,10 +13,11 @@ import java.util.ArrayList;
 public class UDPServer implements Server{
 
     private DatagramSocket udpServer = null;
+    private final DataStorage DataStorage = new DataStorage();
 
     @Override
-    public void startServer(int port) throws IOException {
-        udpServer = new DatagramSocket(port);
+    public void startServer(int clientPort, int serverPort) throws IOException {
+        udpServer = new DatagramSocket(clientPort);
         while (!udpServer.isClosed()) {
             System.out.println(udpServer.isClosed());
             byte[] buffer = new byte[65535];
@@ -49,5 +52,10 @@ public class UDPServer implements Server{
     @Override
     public void exit() {
         udpServer.close();
+    }
+
+    @Override
+    public void respondToServer(String key, String value, String operation, DataOutputStream outToServer) throws IOException {
+        return;
     }
 }
