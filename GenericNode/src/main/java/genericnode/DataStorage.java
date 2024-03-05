@@ -6,6 +6,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DataStorage {
     private static final ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
 
+    public DataStorage() {
+    }
     public static synchronized void put(String key, String value) {
         map.put(key, value);
     }
