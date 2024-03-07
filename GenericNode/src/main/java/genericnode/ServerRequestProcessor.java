@@ -5,76 +5,74 @@ import java.io.IOException;
 
 public class ServerRequestProcessor {
 
-    private DataStorage dataStorage;
-    private KeyLockManager keyLockManager;
+    private LockableDataStorage dataStorage;
 
-    public ServerRequestProcessor(DataStorage dataStorage, KeyLockManager keyLockManager) {
+    public ServerRequestProcessor(LockableDataStorage dataStorage) {
         this.dataStorage = dataStorage;
-        this.keyLockManager = keyLockManager;
     }
 
-    public void processServerRequest(String operation, String key, String value, DataOutputStream outToServer, DataStorage dataStorage, KeyLockManager keyLockManager) throws IOException {
+    public void processServerRequest(String operation, String key, String value, DataOutputStream outToServer) throws IOException {
         switch (operation) {
             case "dput1":
-                handleDput1(key, outToServer, keyLockManager);
+                handleDput1(key, outToServer);
                 break;
             case "dput2":
-                handleDput2(key, value, outToServer, dataStorage, keyLockManager);
+                handleDput2(key, value, outToServer);
                 break;
             case "dputabort":
-                handleDputAbort(key, outToServer, keyLockManager);
+                handleDputAbort(key, outToServer);
                 break;
             case "ddel1":
-                handleDdel1(key, outToServer, keyLockManager);
+                handleDdel1(key, outToServer);
                 break;
             case "ddel2":
-                handleDdel2(key, outToServer, dataStorage, keyLockManager);
+                handleDdel2(key, outToServer);
                 break;
             case "ddelabort":
-                handleDdelAbort(key, outToServer, keyLockManager);
+                handleDdelAbort(key, outToServer);
                 break;
             default:
                 throw new IllegalArgumentException("Invalid operation: " + operation);
         }
     }
 
-    private void handleDput1(String key, DataOutputStream outToServer, KeyLockManager keyLockManager) throws IOException {
-        if(keyLockManager.isKeyLocked(key)) {
+    private void handleDput1(String key, DataOutputStream outToServer) throws IOException {
+        if(dataStorage.isKeyLocked(key)) {
             outToServer.writeUTF("Locked");
         } else {
-            keyLockManager.lockKey(key);
+            dataStorage.lockKey(key);
             outToServer.writeUTF("Accept");
         }
     }
 
-    private void handleDput2(String key, String value, DataOutputStream outToServer, DataStorage dataStorage, KeyLockManager keyLockManager) throws IOException {
+    private void handleDput2(String key, String value, DataOutputStream outToServer) throws IOException {
         dataStorage.put(key, value);
-        keyLockManager.unlockKey(key);
+        dataStorage.unlockKey(key);
         outToServer.writeUTF("Accept");
     }
 
-    private void handleDputAbort(String key, DataOutputStream outToServer, KeyLockManager keyLockManager) throws IOException {
-        keyLockManager.unlockKey(key);
+    private void handleDputAbort(String key, DataOutputStream outToServer) throws IOException {
+        dataStorage.unlockKey(key);
         outToServer.writeUTF("Accept");
     }
 
-    private void handleDdel1(String key, DataOutputStream outToServer, KeyLockManager keyLockManager) throws IOException {
-        if(keyLockManager.isKeyLocked(key)) {
+    private void handleDdel1(String key, DataOutputStream outToServer) throws IOException {
+        if(dataStorage.isKeyLocked(key)) {
             outToServer.writeUTF("Locked");
         } else {
-            keyLockManager.lockKey(key);
+            dataStorage.lockKey(key);
             outToServer.writeUTF("Accept");
         }
     }
 
-    private void handleDdel2(String key, DataOutputStream outToServer, DataStorage dataStorage, KeyLockManager keyLockManager) throws IOException {
+    private void handleDdel2(String key, DataOutputStream outToServer) throws IOException {
         dataStorage.del(key);
-        keyLockManager.unlockKey(key);
+        dataStorage.unlockKey(key);
         outToServer.writeUTF("Accept");
     }
 
-    private void handleDdelAbort(String key, DataOutputStream outToServer, KeyLockManager keyLockManager) throws IOException {
-        keyLockManager.unlockKey(key);
+    private void handleDdelAbort(String key, DataOutputStream outToServer) throws IOException {
+        dataStorage.unlockKey(key);
         outToServer.writeUTF("Accept");
     }
 }

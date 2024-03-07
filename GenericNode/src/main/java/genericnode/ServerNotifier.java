@@ -15,7 +15,7 @@ public class ServerNotifier {
         this.ATTEMPT_LIMIT = attemptLimit;
     }
 
-    public void put(String key, String value, DataStorage dataStorage, KeyLockManager keyLockManager) throws IOException {
+    public void put(String key, String value) throws IOException {
         boolean success = true;
         for (ServerConnection serverConnection : otherServers) {
             if (!dput1(key, value, serverConnection)) {
@@ -24,7 +24,6 @@ public class ServerNotifier {
             }
         }
         if(success) {
-            //dataStorage.put(key, value);
             for (ServerConnection serverConnection : otherServers) {
                 dput2(key, value, serverConnection);
             }
@@ -35,7 +34,7 @@ public class ServerNotifier {
         }
     }
 
-    public void del(String key, DataStorage dataStorage, KeyLockManager keyLockManager) throws IOException {
+    public void del(String key) throws IOException {
         boolean success = true;
         for (ServerConnection serverConnection : otherServers) {
             if (!ddel1(key, serverConnection)) {
@@ -44,7 +43,6 @@ public class ServerNotifier {
             }
         }
         if(success) {
-            //dataStorage.del(key);
             for (ServerConnection serverConnection : otherServers) {
                 ddel2(key, serverConnection);
             }
@@ -55,46 +53,7 @@ public class ServerNotifier {
         }
     }
 
-    public void processServerRequest(String operation, String key, String value, DataOutputStream outToServer, DataStorage dataStorage, KeyLockManager keyLockManager) throws IOException {
-        switch (operation) {
-            case "dput1":
-                if(keyLockManager.isKeyLocked(key)) {
-                    outToServer.writeUTF("Locked");
-                } else {
-                    keyLockManager.lockKey(key);
-                    outToServer.writeUTF("Accept");
-                }
-                break;
-            case "dput2":
-                dataStorage.put(key, value);
-                keyLockManager.unlockKey(key);
-                outToServer.writeUTF("Accept");
-                break;
-            case "dputabort":
-                keyLockManager.unlockKey(key);
-                outToServer.writeUTF("Accept");
-                break;
-            case "ddel1":
-                if(keyLockManager.isKeyLocked(key)) {
-                    outToServer.writeUTF("Locked");
-                } else {
-                    keyLockManager.lockKey(key);
-                    outToServer.writeUTF("Accept");
-                }
-                break;
-            case "ddel2":
-                dataStorage.del(key);
-                keyLockManager.unlockKey(key);
-                outToServer.writeUTF("Accept");
-                break;
-            case "ddelabort":
-                keyLockManager.unlockKey(key);
-                outToServer.writeUTF("Accept");
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid operation: " + operation);
-        }
-    }
+
 
     public boolean notifyOtherServer(String operation, String key, String value, ServerConnection serverConnection) throws IOException {
         int attemptCount = 0;

@@ -1,15 +1,10 @@
 package genericnode.server;
 
-import genericnode.DataStorage;
-import genericnode.ServerNotifier;
-import genericnode.GetOtherServersStrategy;
-import genericnode.KeyLockManager;
-import genericnode.ServerConnection;
+import genericnode.*;
 import genericnode.handler.ClientHandler;
 import genericnode.handler.ServerHandler;
 import genericnode.handler.TcpClientHandler;
 import genericnode.handler.TcpServerHandler;
-import genericnode.ServerRequestProcessor;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -21,8 +16,8 @@ public class TCPServer implements Server {
     private final int ATTEMPT_LIMIT = 10;
     private ServerSocket tcpClientServer = null;
     private ServerSocket tcpServerServer = null;
-    private final KeyLockManager keyLockManager = new KeyLockManager();
-    private final DataStorage dataStorage = new DataStorage();
+
+    private final LockableDataStorage dataStorage = new LockableDataStorage();
     private final GetOtherServersStrategy getOtherServersStrategy;
     private final ServerNotifier serverNotifier;
     private final ServerRequestProcessor requestProcessor;
@@ -31,7 +26,7 @@ public class TCPServer implements Server {
         super();
         this.getOtherServersStrategy = getOtherServersStrategy;
         this.serverNotifier = new ServerNotifier(getOtherServersStrategy.getOtherServers(), ATTEMPT_LIMIT);
-        this.requestProcessor = new ServerRequestProcessor(dataStorage, keyLockManager);
+        this.requestProcessor = new ServerRequestProcessor(dataStorage);
         System.out.println("Server started");
         System.out.println("Other servers: " );
         for (ServerConnection serverConnection : getOtherServersStrategy.getOtherServers()) {
@@ -78,7 +73,7 @@ public class TCPServer implements Server {
 
     @Override
     public void put (String key, String value) throws IOException {
-        serverNotifier.put(key, value, dataStorage, keyLockManager);
+        serverNotifier.put(key, value);
     }
 
     @Override
@@ -88,7 +83,7 @@ public class TCPServer implements Server {
 
     @Override
     public void del (String key) throws IOException {
-        serverNotifier.del(key, dataStorage, keyLockManager);
+        serverNotifier.del(key);
     }
 
     @Override
@@ -102,6 +97,6 @@ public class TCPServer implements Server {
     }
 
     public void processServerRequest(String operation, String key, String value, DataOutputStream outToServer) throws IOException {
-        requestProcessor.processServerRequest(operation, key, value, outToServer, dataStorage, keyLockManager);
+        requestProcessor.processServerRequest(operation, key, value, outToServer);
     }
 }
