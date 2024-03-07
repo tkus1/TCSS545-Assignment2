@@ -25,7 +25,7 @@ public class TCPServer implements Server {
     public TCPServer(GetOtherServersStrategy getOtherServersStrategy) {
         super();
         this.getOtherServersStrategy = getOtherServersStrategy;
-        this.serverNotifier = new ServerNotifier(getOtherServersStrategy.getOtherServers(), ATTEMPT_LIMIT);
+        this.serverNotifier = new ServerNotifier(getOtherServersStrategy, ATTEMPT_LIMIT);
         this.requestProcessor = new ServerRequestProcessor(dataStorage);
         System.out.println("Server started");
         System.out.println("Other servers: " );
