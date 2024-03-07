@@ -47,6 +47,7 @@ public class TCPServer implements Server {
                 while (!tcpServerServer.isClosed()) {
                     System.out.println(tcpServerServer.isClosed());
                     Socket connectionSocket = tcpServerServer.accept();
+                    System.out.println("Server connected" + connectionSocket.getInetAddress() + ":" + connectionSocket.getPort());
                     ServerHandler tcpServerHandler = new TcpServerHandler(connectionSocket, this);
                     new Thread(tcpServerHandler).start();
                 }
@@ -67,7 +68,7 @@ public class TCPServer implements Server {
             }
         }
         if(success) {
-            dataStorage.put(key, value);
+            //dataStorage.put(key, value);
             for (ServerConnection serverConnection : otherServers) {
                 dput2(key, value, serverConnection);
             }
@@ -128,7 +129,8 @@ public class TCPServer implements Server {
     }
 
     private boolean notifyOtherServer(String operation, String key, String value, ServerConnection serverConnection) throws IOException {
-        otherServers = getOtherServersStrategy.getOtherServers();
+        //otherServers = getOtherServersStrategy.getOtherServers();
+        System.out.println("notifyOtherServer: " + serverConnection.toString());
         int attemptCount = 0;
         while (attemptCount < ATTEMPT_LIMIT) {
             try {
@@ -136,8 +138,11 @@ public class TCPServer implements Server {
                     System.out.println("connecting to self server");
                     return true;
                 }
+                System.out.println("notifyOtherServer: Connected to server");
+
                 DataOutputStream out = serverConnection.getOutToServer();
-                System.out.println("Sending operation: " + operation);
+                DataInputStream in = serverConnection.getInFromServer();
+                System.out.println("notifyOtherServer: Sending operation: " + operation);
                 out.writeUTF(operation);
                 System.out.println("operation sent");
                 if(operation.equals("dput1")) {
@@ -157,7 +162,7 @@ public class TCPServer implements Server {
                     out.writeUTF(key);
                 }
 
-                DataInputStream in = serverConnection.getInFromServer();
+
                 String response = in.readUTF();
                 System.out.println("Response: " + response);
                 if (response.equals("Accept")) {
@@ -194,9 +199,11 @@ public class TCPServer implements Server {
         else if(operation.equals("dput2")) {
             dataStorage.put(key, value);
             keyLockManager.unlockKey(key);
+            outToServer.writeUTF("Accept");
         }
         else if(operation.equals("dputabort")) {
             keyLockManager.unlockKey(key);
+            outToServer.writeUTF("Accept");
         }
         else if(operation.equals("ddel1")) {
             if(keyLockManager.isKeyLocked(key)) {
@@ -210,10 +217,13 @@ public class TCPServer implements Server {
         else if(operation.equals("ddel2")) {
             dataStorage.del(key);
             keyLockManager.unlockKey(key);
+            outToServer.writeUTF("Accept");
         }
         else if(operation.equals("ddelabort")) {
             keyLockManager.unlockKey(key);
+            outToServer.writeUTF("Accept");
         }
+
     }
 
     private boolean dput1(String key, String value, ServerConnection serverConnection) throws IOException {
@@ -222,6 +232,7 @@ public class TCPServer implements Server {
     }
 
     private void dput2(String key, String value, ServerConnection serverConnection) throws IOException {
+        System.out.println("sending dput2"+ " key:" + key+" value:"+ value + " to " + serverConnection);
         notifyOtherServer("dput2", key, value, serverConnection);
     }
 

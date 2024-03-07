@@ -1,6 +1,5 @@
 package genericnode.handler;
 
-import genericnode.server.DistTCPServer;
 import genericnode.server.TCPServer;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -16,7 +15,7 @@ public class TcpServerHandler extends ServerHandler{
 
     public void run() {
         try {
-            System.out.println(Thread.currentThread().getId());
+            System.out.println("TCPServerHandler :"+Thread.currentThread().getId());
             DataInputStream inFromServer = new DataInputStream(connectionSocket.getInputStream());
             DataOutputStream outToServer = new DataOutputStream(connectionSocket.getOutputStream());
             String operation = inFromServer.readUTF();
@@ -41,6 +40,7 @@ public class TcpServerHandler extends ServerHandler{
             System.out.println("Receipt : Operation: " + operation + " Key: " + key + " Value: " + value);
             System.out.println("Responding to server");
             server.respondToServer(operation, key, value, outToServer);
+            connectionSocket.close();
         }catch (IOException e) {
             System.out.println("Error in TcpServerHandler");
             System.out.println(e);

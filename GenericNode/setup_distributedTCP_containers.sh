@@ -8,6 +8,7 @@ docker image build -t ubuntu:TCPClient docker_client/
 echo "Stopping running UDP containers..."
 docker container rm --force DistTCPServer1
 docker container rm --force DistTCPServer2
+docker container rm --force DistTCPServer3
 docker container rm --force TCPClient
 
 echo "Removing DistributedTCPNetwork network..."

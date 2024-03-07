@@ -21,20 +21,9 @@ public class ServerConnection {
     public boolean connect() throws IOException {
         System.out.println("Connecting to " + host + " on port " + port);
         socket = new Socket(host, port);
-        if (isSelfConnection()) {
-            System.out.println("Connection to self is not allowed. Closing the connection.");
-            socket.close();
-            return false;
-        }
         outToServer = new DataOutputStream(socket.getOutputStream());
         inFromServer = new DataInputStream(socket.getInputStream());
         return true;
-    }
-
-    private boolean isSelfConnection() throws IOException {
-        InetAddress localAddress = InetAddress.getLocalHost();
-        InetAddress remoteAddress = socket.getInetAddress();
-        return remoteAddress.equals(localAddress);
     }
 
     public void close() throws IOException {
@@ -50,11 +39,21 @@ public class ServerConnection {
         }
         socket.close();
     }
+
     public DataOutputStream getOutToServer() {
         return outToServer;
     }
+
     public DataInputStream getInFromServer() {
         return inFromServer;
+    }
+
+    //just for debugging
+    public String toString() {
+        return "ServerConnection{" +
+                "host='" + host + '\'' +
+                ", port=" + port +
+                '}';
     }
 
 }

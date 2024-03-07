@@ -19,7 +19,7 @@ public class TcpClientHandler extends ClientHandler {
     @Override
     public void run() {
         try {
-            System.out.println(Thread.currentThread().getId());
+            System.out.println("TCPClientHandler :"+ Thread.currentThread().getId());
             DataInputStream inFromClient = new DataInputStream(connectionSocket.getInputStream());
             DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
             String operation = inFromClient.readUTF();
