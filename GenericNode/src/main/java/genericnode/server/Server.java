@@ -15,5 +15,5 @@ public interface Server {
     void del(String key) throws IOException;
     ArrayList<String> store() throws IOException;
     void exit() throws IOException;
-    void respondToServer(String key, String value, String operation, DataOutputStream outToServer) throws IOException;
+    void processServerRequest(String key, String value, String operation, DataOutputStream outToServer) throws IOException;
 }

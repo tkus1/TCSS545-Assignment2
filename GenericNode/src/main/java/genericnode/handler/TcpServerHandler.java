@@ -39,7 +39,7 @@ public class TcpServerHandler extends ServerHandler{
             }
             System.out.println("Receipt : Operation: " + operation + " Key: " + key + " Value: " + value);
             System.out.println("Responding to server");
-            server.respondToServer(operation, key, value, outToServer);
+            server.processServerRequest(operation, key, value, outToServer);
             connectionSocket.close();
         }catch (IOException e) {
             System.out.println("Error in TcpServerHandler");

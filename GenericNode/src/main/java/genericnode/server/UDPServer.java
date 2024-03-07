@@ -55,7 +55,7 @@ public class UDPServer implements Server{
     }
 
     @Override
-    public void respondToServer(String key, String value, String operation, DataOutputStream outToServer) throws IOException {
+    public void processServerRequest(String key, String value, String operation, DataOutputStream outToServer) throws IOException {
         return;
     }
 }
