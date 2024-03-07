@@ -61,7 +61,7 @@ public class GenericNode
                 // insert code to make TCP client request to server at addr:port
                 TCPClient client = new TCPClient();
                 client.connect(addr, port);
-                 client.executeOperation(cmd, entry);
+                client.executeOperation(cmd, entry);
             }
 
             if (args[0].equals("ts"))

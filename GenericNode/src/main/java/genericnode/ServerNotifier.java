@@ -9,13 +9,16 @@ public class ServerNotifier {
 
     private List<ServerConnection> otherServers;
     private final int ATTEMPT_LIMIT;
+    private final GetOtherServersStrategy getOtherServersStrategy;
 
-    public ServerNotifier(List<ServerConnection> otherServers, int attemptLimit) {
-        this.otherServers = otherServers;
+    public ServerNotifier(GetOtherServersStrategy getOtherServersStrategy, int attemptLimit) {
+        this.getOtherServersStrategy = getOtherServersStrategy;
+        this.otherServers = getOtherServersStrategy.getOtherServers();
         this.ATTEMPT_LIMIT = attemptLimit;
     }
 
     public void put(String key, String value) throws IOException {
+        otherServers = getOtherServersStrategy.getOtherServers();
         boolean success = true;
         for (ServerConnection serverConnection : otherServers) {
             if (!dput1(key, value, serverConnection)) {
@@ -35,6 +38,7 @@ public class ServerNotifier {
     }
 
     public void del(String key) throws IOException {
+        otherServers = getOtherServersStrategy.getOtherServers();
         boolean success = true;
         for (ServerConnection serverConnection : otherServers) {
             if (!ddel1(key, serverConnection)) {
@@ -52,8 +56,6 @@ public class ServerNotifier {
             }
         }
     }
-
-
 
     public boolean notifyOtherServer(String operation, String key, String value, ServerConnection serverConnection) throws IOException {
         int attemptCount = 0;
