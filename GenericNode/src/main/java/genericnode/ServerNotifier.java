@@ -3,6 +3,7 @@ package genericnode;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ServerNotifier {
@@ -19,9 +20,12 @@ public class ServerNotifier {
 
     public void put(String key, String value) throws IOException {
         otherServers = getOtherServersStrategy.getOtherServers();
+        List<ServerConnection> notifiedServers = new ArrayList<>();
         boolean success = true;
         for (ServerConnection serverConnection : otherServers) {
-            if (!dput1(key, value, serverConnection)) {
+            if (dput1(key, value, serverConnection)) {
+                notifiedServers.add(serverConnection);
+            }else {
                 success = false;
                 break;
             }
@@ -31,7 +35,7 @@ public class ServerNotifier {
                 dput2(key, value, serverConnection);
             }
         } else {
-            for (ServerConnection serverConnection : otherServers) {
+            for (ServerConnection serverConnection : notifiedServers) {
                 dputabort(key, value, serverConnection);
             }
         }
@@ -39,9 +43,12 @@ public class ServerNotifier {
 
     public void del(String key) throws IOException {
         otherServers = getOtherServersStrategy.getOtherServers();
+        List<ServerConnection> notifiedServers = new ArrayList<>();
         boolean success = true;
         for (ServerConnection serverConnection : otherServers) {
-            if (!ddel1(key, serverConnection)) {
+            if (ddel1(key, serverConnection)) {
+                notifiedServers.add(serverConnection);
+            }else {
                 success = false;
                 break;
             }
@@ -51,13 +58,13 @@ public class ServerNotifier {
                 ddel2(key, serverConnection);
             }
         } else {
-            for (ServerConnection serverConnection : otherServers) {
+            for (ServerConnection serverConnection : notifiedServers) {
                 ddelabort(key, serverConnection);
             }
         }
     }
 
-    public boolean notifyOtherServer(String operation, String key, String value, ServerConnection serverConnection) throws IOException {
+    private boolean notifyOtherServer(String operation, String key, String value, ServerConnection serverConnection) throws IOException {
         int attemptCount = 0;
         while (attemptCount < ATTEMPT_LIMIT) {
             try {
