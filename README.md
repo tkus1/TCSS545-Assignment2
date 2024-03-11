@@ -12,7 +12,7 @@ You can change node membership tracking methods by modifying GenericNode/Generic
 
 - TCPServer server = new TCPServer(new ConfigFileGetOtherServersStrategy());
   
-  Distributed TCP servers use a config file to track node membership.
+  Distributed TCP servers use a config file to track node membership (enericNode/docker_server/DistributedTCP_server/serverlist.cfg).
 - TCPServer server = new TCPServer(new CentralizeMembershipGetOtherServersStrategy());
 
   Distributed TCP servers track node membership by using a centralized membership key/value store.
