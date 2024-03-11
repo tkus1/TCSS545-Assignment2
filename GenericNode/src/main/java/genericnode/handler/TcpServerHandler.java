@@ -5,9 +5,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class TcpServerHandler extends ServerHandler{
-    private final Socket connectionSocket;
+    private final Socket connectionSocket; // input port+1
     public TcpServerHandler(Socket connectionSocket, TCPServer server) {
         super(server);
         this.connectionSocket = connectionSocket;
@@ -34,7 +35,7 @@ public class TcpServerHandler extends ServerHandler{
                 key = inFromServer.readUTF();
             } else if (operation.equals("ddel2")) {
                 key = inFromServer.readUTF();
-            } else if (operation.equals("ddelabort")){
+            } else if (operation.equals("ddelabort")) {
                 key = inFromServer.readUTF();
             }
             System.out.println("Receipt : Operation: " + operation + " Key: " + key + " Value: " + value);

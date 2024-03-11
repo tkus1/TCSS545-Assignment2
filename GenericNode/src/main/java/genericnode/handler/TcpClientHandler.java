@@ -42,6 +42,15 @@ public class TcpClientHandler extends ClientHandler {
                     outToClient.writeUTF(entry);
                 }
                 outToClient.writeUTF("Finished");
+            }  else if (operation.equals("heartbeat")) { // Handel heartbeat command received from other servers
+                key = inFromClient.readUTF();
+                value = inFromClient.readUTF();
+                server.put(key+":"+value, String.valueOf(System.currentTimeMillis()));
+                ArrayList<String> entries = server.store();
+                for(String entry : entries) {
+                    outToClient.writeUTF(entry);
+                }
+                outToClient.writeUTF("Done");
             } else {
                 server.exit();
             }

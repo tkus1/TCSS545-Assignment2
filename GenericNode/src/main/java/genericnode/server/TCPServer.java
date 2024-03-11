@@ -7,9 +7,14 @@ import genericnode.handler.TcpClientHandler;
 import genericnode.handler.TcpServerHandler;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class TCPServer implements Server {
 
@@ -18,13 +23,24 @@ public class TCPServer implements Server {
     private ServerSocket tcpServerServer = null;
 
     private final LockableDataStorage dataStorage = new LockableDataStorage();
-    private final GetOtherServersStrategy getOtherServersStrategy;
-    private final ServerNotifier serverNotifier;
-    private final ServerRequestProcessor requestProcessor;
+    private GetOtherServersStrategy getOtherServersStrategy;
+    private ServerNotifier serverNotifier;
+    private ServerRequestProcessor requestProcessor;
+    private final ConcurrentHashMap<String, Integer> serverList = new ConcurrentHashMap<>();
+    private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+    public String dirServerAddr;
+    public int port;
+
+    public TCPServer() {
+        super();
+    }
 
     public TCPServer(GetOtherServersStrategy getOtherServersStrategy) {
         super();
-        this.getOtherServersStrategy = getOtherServersStrategy;
+//        this.getOtherServersStrategy = getOtherServersStrategy;
+        if (getOtherServersStrategy instanceof CentralizeMembershipGetOtherServersStrategy) {
+            ((CentralizeMembershipGetOtherServersStrategy) getOtherServersStrategy).setServer(this);
+        }
         this.serverNotifier = new ServerNotifier(getOtherServersStrategy, ATTEMPT_LIMIT);
         this.requestProcessor = new ServerRequestProcessor(dataStorage);
         System.out.println("Server started");
@@ -38,8 +54,29 @@ public class TCPServer implements Server {
     public void startServer(int clientPort, int serverPort) throws IOException {
         startClientServer(clientPort);
         startServerServer(serverPort);
-
     }
+
+    public void startServerWithCMT(int clientPort, int serverPort) throws IOException {
+        // For regular TCP server, send heartbeat to centralized membership server every 5 seconds
+        executor.scheduleAtFixedRate(this::sendHeartbeat, 0, 5, TimeUnit.SECONDS);
+        startClientServer(clientPort);
+        startServerServer(serverPort);
+    }
+
+    public void startMembershipServer(int port) throws IOException {
+        startClientServer(port);
+        // Check the list of active servers every 10 seconds
+        executor.scheduleAtFixedRate(this::removeDeadServers, 0, 10, TimeUnit.SECONDS);
+    }
+
+    private void removeDeadServers() {
+        long threshold = System.currentTimeMillis() - 10000; // 10 seconds ago
+        dataStorage.remove(threshold);
+    }
+
+//    public void startServer(int port) throws IOException {
+//        startClientServer(port);
+//    }
 
     private void startClientServer(int clientPort) throws IOException {
         tcpClientServer = new ServerSocket(clientPort);
@@ -73,7 +110,12 @@ public class TCPServer implements Server {
 
     @Override
     public void put (String key, String value) throws IOException {
-        serverNotifier.put(key, value);
+        if (serverNotifier != null) {
+            serverNotifier.put(key, value);
+        }
+        else {
+            dataStorage.put(key, value);
+        }
     }
 
     @Override
@@ -83,7 +125,12 @@ public class TCPServer implements Server {
 
     @Override
     public void del (String key) throws IOException {
-        serverNotifier.del(key);
+        if (serverNotifier != null) {
+            serverNotifier.del(key);
+        }
+        else {
+            dataStorage.del(key);
+        }
     }
 
     @Override
@@ -98,5 +145,36 @@ public class TCPServer implements Server {
 
     public void processServerRequest(String operation, String key, String value, DataOutputStream outToServer) throws IOException {
         requestProcessor.processServerRequest(operation, key, value, outToServer);
+    }
+
+    public void sendHeartbeat() {
+        try {
+            Socket clientSocket = new Socket(dirServerAddr, 4410);
+            DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+            DataInputStream inFromServer = new DataInputStream(clientSocket.getInputStream());
+            outToServer.writeUTF("heartbeat");
+
+            InetAddress localhost = InetAddress.getLocalHost();
+            String ipAddress = (localhost.getHostAddress()).trim();
+            outToServer.writeUTF(ipAddress);
+            outToServer.writeUTF(String.valueOf(port));
+
+            serverList.clear();
+            String entry = inFromServer.readUTF();
+            while (!entry.equals("Done")) {
+                String[] parts = entry.split(":");
+                serverList.put(parts[1], Integer.valueOf(parts[2]));
+                entry = inFromServer.readUTF();
+            }
+            clientSocket.close();
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ConcurrentHashMap<String, Integer> getServerList() {
+        return this.serverList;
     }
 }

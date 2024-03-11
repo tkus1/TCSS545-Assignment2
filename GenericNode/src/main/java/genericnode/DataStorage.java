@@ -28,4 +28,9 @@ public class DataStorage {
         }
         return arrayList;
     }
+
+    // Remove the servers that are no longer responding
+    public static synchronized void remove(long threshold) {
+        map.entrySet().removeIf(entry -> Long.parseLong(entry.getValue()) < threshold);
+    }
 }
