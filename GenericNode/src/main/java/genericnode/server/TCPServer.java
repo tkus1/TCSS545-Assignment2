@@ -23,7 +23,6 @@ public class TCPServer implements Server {
     private ServerSocket tcpServerServer = null;
 
     private final LockableDataStorage dataStorage = new LockableDataStorage();
-    private GetOtherServersStrategy getOtherServersStrategy;
     private ServerNotifier serverNotifier;
     private ServerRequestProcessor requestProcessor;
     private final ConcurrentHashMap<String, Integer> serverList = new ConcurrentHashMap<>();
@@ -71,12 +70,8 @@ public class TCPServer implements Server {
 
     private void removeDeadServers() {
         long threshold = System.currentTimeMillis() - 10000; // 10 seconds ago
-        dataStorage.remove(threshold);
+        DataStorage.remove(threshold);
     }
-
-//    public void startServer(int port) throws IOException {
-//        startClientServer(port);
-//    }
 
     private void startClientServer(int clientPort) throws IOException {
         tcpClientServer = new ServerSocket(clientPort);
@@ -114,13 +109,13 @@ public class TCPServer implements Server {
             serverNotifier.put(key, value);
         }
         else {
-            dataStorage.put(key, value);
+            DataStorage.put(key, value);
         }
     }
 
     @Override
     public String get (String key) throws IOException {
-        return dataStorage.get(key);
+        return DataStorage.get(key);
     }
 
     @Override
@@ -129,13 +124,13 @@ public class TCPServer implements Server {
             serverNotifier.del(key);
         }
         else {
-            dataStorage.del(key);
+            DataStorage.del(key);
         }
     }
 
     @Override
     public ArrayList<String> store () throws IOException {
-        return dataStorage.store();
+        return DataStorage.store();
     }
 
     @Override
@@ -157,7 +152,7 @@ public class TCPServer implements Server {
             InetAddress localhost = InetAddress.getLocalHost();
             String ipAddress = (localhost.getHostAddress()).trim();
             outToServer.writeUTF(ipAddress);
-            outToServer.writeUTF(String.valueOf(port));
+            outToServer.writeUTF(String.valueOf(port+1));
 
             serverList.clear();
             String entry = inFromServer.readUTF();

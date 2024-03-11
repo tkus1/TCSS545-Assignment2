@@ -56,7 +56,7 @@ public class GenericNode
                 String cmd = args[3];
                 String key = (args.length > 4) ? args[4] : "";
                 String val = (args.length > 5) ? args[5] : "";
-                SimpleEntry<String, String> entry = new SimpleEntry<String, String>(key, val);
+                SimpleEntry<String, String> entry = new SimpleEntry<>(key, val);
                 // insert code to make TCP client request to server at addr:port
                 TCPClient client = new TCPClient();
                 client.connect(addr, port);
@@ -70,7 +70,7 @@ public class GenericNode
                 // insert code to start TCP server on port
                 TCPServer server;
                 if (args.length > 2) {
-                    String dirServerAddr = args[2];; // membership-server-IP
+                    String dirServerAddr = args[2];// membership-server-IP
                     server = new TCPServer(new CentralizeMembershipGetOtherServersStrategy());
                     server.dirServerAddr = dirServerAddr;
                     server.port = port;
@@ -87,7 +87,7 @@ public class GenericNode
                 else {
                     System.out.println("Config file");
                     server = new TCPServer(new ConfigFileGetOtherServersStrategy());
-                    server.startServer(port,port+1); //todo reconsider this. Should server port be specified?
+                    server.startServer(port,port+1);
                 }
             }
             if (args[0].equals("uc"))
@@ -98,7 +98,7 @@ public class GenericNode
                 String cmd = args[3];
                 String key = (args.length > 4) ? args[4] : "";
                 String val = (args.length > 5) ? args[5] : "";
-                SimpleEntry<String, String> entry = new SimpleEntry<String, String>(key, val);
+                SimpleEntry<String, String> entry = new SimpleEntry<>(key, val);
                 // insert code to make UDP client request to server at addr:send/recvport
                 UDPClient client = new UDPClient();
                 client.connect(addr, sendport);
@@ -110,7 +110,7 @@ public class GenericNode
                 int port = Integer.parseInt(args[1]);
                 // insert code to start UDP server on port
                 UDPServer server = new UDPServer();
-                server.startServer(port,port+1); //todo reconsider this. Should server port be specified?
+                server.startServer(port,port+1);
             }
 
         }
