@@ -23,7 +23,7 @@ docker network create DistributedTCPNetwork
 #docker-compose -f docker_server/DistributedTCP_server/docker-compose-1server.yml up -d
 
 # Number of servers: 3
-docker-compose -f docker_server/DistributedTCP_server/docker-compose-3server.yml up -d
+#docker-compose -f docker_server/DistributedTCP_server/docker-compose-3server.yml up -d
 
 # Number of servers: 5
-#docker-compose -f docker_server/DistributedTCP_server/docker-compose-5server.yml up -d
+docker-compose -f docker_server/DistributedTCP_server/docker-compose-5server.yml up -d
