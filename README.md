@@ -3,7 +3,7 @@
 Performance test can be executed by running GenericNode/docker_client/performanceTestDistTCP.sh
 ### Set Number of Servers
 Number of servers can be set by editing three files below;
-- GenericNode/docker_server/DistributedTCP_server/serverlist.cfg
+- GenericNode/docker_server/DistributedTCP_server/serverlist.cfg (only for the config file tracking method)
 - GenericNode/haproxy/haproxy.cfg
 - GenericNode/setup_distributedTCP_containers.sh
 ### Set Node Membership Tracking Methods
@@ -11,9 +11,11 @@ You can change node membership tracking methods by modifying GenericNode/Generic
 ![image](https://github.com/tkus1/TCSS545-Assignment2/assets/146398096/7c73292f-922a-44af-9cdf-5e89caab65db)
 
 - TCPServer server = new TCPServer(new ConfigFileGetOtherServersStrategy());
-Distributed TCP servers use a config file to track node membership.
+  
+  Distributed TCP servers use a config file to track node membership.
 - TCPServer server = new TCPServer(new CentralizeMembershipGetOtherServersStrategy());
-Distributed TCP servers track node membership by using a centralized membership key/value store.
+
+  Distributed TCP servers track node membership by using a centralized membership key/value store.
 
 
 # Assignment2
