@@ -16,6 +16,15 @@ You can change node membership tracking methods by modifying GenericNode/Generic
 - TCPServer server = new TCPServer(new CentralizeMembershipGetOtherServersStrategy());
 
   Distributed TCP servers track node membership by using a centralized membership key/value store.
+## Sequence Diagram
+- Success
+
+![image](https://github.com/tkus1/TCSS545-Assignment2/assets/146398096/5386216c-3d2c-4967-ac21-f1664783e1ab)
+
+- Fail
+
+
+![image](https://github.com/tkus1/TCSS545-Assignment2/assets/146398096/62285752-229e-4b1c-88a3-fb30792e0c07)
 
 
 # Assignment2
