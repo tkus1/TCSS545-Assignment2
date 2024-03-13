@@ -30,8 +30,9 @@ public class UDPServer implements Server{
     }
 
     @Override
-    public void put(String key, String value) {
+    public String put(String key, String value) {
         DataStorage.put(key, value);
+        return key;
     }
 
     @Override
@@ -40,8 +41,9 @@ public class UDPServer implements Server{
     }
 
     @Override
-    public void del(String key) {
+    public String del(String key) {
         DataStorage.del(key);
+        return key;
     }
 
     @Override

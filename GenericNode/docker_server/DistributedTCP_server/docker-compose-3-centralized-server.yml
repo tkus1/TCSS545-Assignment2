@@ -1,0 +1,30 @@
+version: '3'
+services:
+  DistTCPServer1:
+    image: ubuntu:centralizedTCPStorageServer
+    container_name: DistTCPServer1
+    ports:
+      - "8081:8080"
+      - "8082:8081"
+  DistTCPServer2:
+    image: ubuntu:centralizedTCPStorageServer
+    container_name: DistTCPServer2
+    ports:
+      - "8083:8080"
+      - "8084:8081"
+  DistTCPServer3:
+    image: ubuntu:centralizedTCPStorageServer
+    container_name: DistTCPServer3
+    ports:
+      - "8085:8080"
+      - "8086:8081"
+  MembershipServer:
+    image: ubuntu:centralizedTCPMembershipServer
+    container_name: MembershipServer
+    ports:
+      - "4410:4410"
+  Haproxy:
+    image: haproxy:distTCPHaproxy
+    container_name: Haproxy
+    ports:
+      - "8080:80"

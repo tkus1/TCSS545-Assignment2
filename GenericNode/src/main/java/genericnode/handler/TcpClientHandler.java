@@ -28,14 +28,16 @@ public class TcpClientHandler extends ClientHandler {
             if (operation.equals("put")) {
                 key = inFromClient.readUTF();
                 value = inFromClient.readUTF();
-                server.put(key, value);
+                String keyfromServer = server.put(key, value);
+                outToClient.writeUTF(keyfromServer);
             } else if (operation.equals("get")) {
                 key = inFromClient.readUTF();
                 value = server.get(key);
                 outToClient.writeUTF(value);
             } else if (operation.equals("del")) {
                 key = inFromClient.readUTF();
-                server.del(key);
+                String keyfromServer = server.del(key);
+                outToClient.writeUTF(keyfromServer);
             } else if (operation.equals("store")) {
                 ArrayList<String> entries = server.store();
                 for(String entry : entries) {

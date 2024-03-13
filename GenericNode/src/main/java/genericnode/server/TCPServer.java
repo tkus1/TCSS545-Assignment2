@@ -104,13 +104,14 @@ public class TCPServer implements Server {
     }
 
     @Override
-    public void put (String key, String value) throws IOException {
+    public String put (String key, String value) throws IOException {
         if (serverNotifier != null) {
             serverNotifier.put(key, value);
         }
         else {
             DataStorage.put(key, value);
         }
+        return key;
     }
 
     @Override
@@ -119,13 +120,14 @@ public class TCPServer implements Server {
     }
 
     @Override
-    public void del (String key) throws IOException {
+    public String del (String key) throws IOException {
         if (serverNotifier != null) {
             serverNotifier.del(key);
         }
         else {
             DataStorage.del(key);
         }
+        return key;
     }
 
     @Override
