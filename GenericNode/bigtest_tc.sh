@@ -1,6 +1,6 @@
 server=localhost
-port=8080  ## This is the port of the haproxy container
-
+port=8080
+server=localhost
 java -jar GenericNode.jar tc $server $port put mD7 booLeejae8ne0lahgoos
 java -jar GenericNode.jar tc $server $port put 1VB ahghukooy8ooYi7eeChe
 java -jar GenericNode.jar tc $server $port put 8CX eK8zae6LaeTh2Niijeih

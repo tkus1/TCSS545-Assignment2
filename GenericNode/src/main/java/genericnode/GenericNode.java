@@ -5,7 +5,6 @@
  */
 package genericnode;
 
-import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
 import genericnode.server.*;
 import genericnode.client.*;
@@ -20,7 +19,7 @@ public class GenericNode
      * @param args the command line arguments
      */
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         if (args.length > 0)
         {
             if (args[0].equals("rmis"))
@@ -57,7 +56,7 @@ public class GenericNode
                 String cmd = args[3];
                 String key = (args.length > 4) ? args[4] : "";
                 String val = (args.length > 5) ? args[5] : "";
-                SimpleEntry<String, String> entry = new SimpleEntry<String, String>(key, val);
+                SimpleEntry<String, String> entry = new SimpleEntry<>(key, val);
                 // insert code to make TCP client request to server at addr:port
                 TCPClient client = new TCPClient();
                 client.connect(addr, port);
@@ -69,8 +68,27 @@ public class GenericNode
                 System.out.println("TCP SERVER");
                 int port = Integer.parseInt(args[1]);
                 // insert code to start TCP server on port
-                TCPServer server = new TCPServer();
-                server.startServer(port);
+                TCPServer server;
+                if (args.length > 2) {
+                    String dirServerAddr = args[2];// membership-server-IP
+                    server = new TCPServer(new CentralizeMembershipGetOtherServersStrategy());
+                    server.dirServerAddr = dirServerAddr;
+                    server.port = port;
+                    server.sendHeartbeat();
+                    server.startServerWithCMT(port, port+1);
+                }
+                // Start centralized node directory server
+                else if (port == 4410) {
+                    System.out.println("Centralized membership key/value store");
+                    server = new TCPServer();
+                    server.startMembershipServer(port);
+                }
+                // Static config file membership
+                else {
+                    System.out.println("Config file");
+                    server = new TCPServer(new ConfigFileGetOtherServersStrategy());
+                    server.startServer(port,port+1);
+                }
             }
             if (args[0].equals("uc"))
             {
@@ -80,7 +98,7 @@ public class GenericNode
                 String cmd = args[3];
                 String key = (args.length > 4) ? args[4] : "";
                 String val = (args.length > 5) ? args[5] : "";
-                SimpleEntry<String, String> entry = new SimpleEntry<String, String>(key, val);
+                SimpleEntry<String, String> entry = new SimpleEntry<>(key, val);
                 // insert code to make UDP client request to server at addr:send/recvport
                 UDPClient client = new UDPClient();
                 client.connect(addr, sendport);
@@ -92,7 +110,7 @@ public class GenericNode
                 int port = Integer.parseInt(args[1]);
                 // insert code to start UDP server on port
                 UDPServer server = new UDPServer();
-                server.startServer(port);
+                server.startServer(port,port+1);
             }
 
         }

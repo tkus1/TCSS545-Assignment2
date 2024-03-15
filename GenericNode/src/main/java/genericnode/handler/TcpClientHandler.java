@@ -19,7 +19,7 @@ public class TcpClientHandler extends ClientHandler {
     @Override
     public void run() {
         try {
-            System.out.println(Thread.currentThread().getId());
+            System.out.println("TCPClientHandler :"+ Thread.currentThread().getId());
             DataInputStream inFromClient = new DataInputStream(connectionSocket.getInputStream());
             DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
             String operation = inFromClient.readUTF();
@@ -28,20 +28,31 @@ public class TcpClientHandler extends ClientHandler {
             if (operation.equals("put")) {
                 key = inFromClient.readUTF();
                 value = inFromClient.readUTF();
-                server.put(key, value);
+                String keyfromServer = server.put(key, value);
+                outToClient.writeUTF(keyfromServer);
             } else if (operation.equals("get")) {
                 key = inFromClient.readUTF();
                 value = server.get(key);
                 outToClient.writeUTF(value);
             } else if (operation.equals("del")) {
                 key = inFromClient.readUTF();
-                server.del(key);
+                String keyfromServer = server.del(key);
+                outToClient.writeUTF(keyfromServer);
             } else if (operation.equals("store")) {
                 ArrayList<String> entries = server.store();
                 for(String entry : entries) {
                     outToClient.writeUTF(entry);
                 }
                 outToClient.writeUTF("Finished");
+            }  else if (operation.equals("heartbeat")) { // Handel heartbeat command received from other servers
+                key = inFromClient.readUTF();
+                value = inFromClient.readUTF();
+                server.put(key+":"+value, String.valueOf(System.currentTimeMillis()));
+                ArrayList<String> entries = server.store();
+                for(String entry : entries) {
+                    outToClient.writeUTF(entry);
+                }
+                outToClient.writeUTF("Done");
             } else {
                 server.exit();
             }

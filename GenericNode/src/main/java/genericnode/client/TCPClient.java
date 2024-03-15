@@ -19,7 +19,8 @@ public class TCPClient implements Client {
     public void put (String key, String value) throws IOException {
         outToServer.writeUTF(key);
         outToServer.writeUTF(value);
-        System.out.println(serverResponse + "put key=" + key);
+//        System.out.println(serverResponse + "put key=" + key);
+        System.out.println(serverResponse + "put key=" + inFromServer.readUTF());
         clientSocket.close();
     }
 
@@ -32,7 +33,8 @@ public class TCPClient implements Client {
     @Override
     public void del (String key) throws IOException {
         outToServer.writeUTF(key);
-        System.out.println(serverResponse + "delete key="+ key);
+//        System.out.println(serverResponse + "delete key="+ key);
+        System.out.println(serverResponse + "delete key="+ inFromServer.readUTF());
     }
 
     @Override

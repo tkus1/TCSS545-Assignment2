@@ -1,0 +1,13 @@
+version: '3'
+services:
+  DistTCPServer1:
+    image: ubuntu:distTCPServer
+    container_name: DistTCPServer1
+    ports:
+      - "8081:8080"
+      - "8082:8081"
+  Haproxy:
+    image: haproxy:distTCPHaproxy
+    container_name: Haproxy
+    ports:
+      - "8080:80"
